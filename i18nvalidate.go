@@ -11,6 +11,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Validator is the main entry-point for performing struct validation with
+// translated error messages.
+//
+// A Validator instance is safe for concurrent use by multiple goroutines.
 type Validator struct {
 	Validator       *validator.Validate
 	Uni             *ut.UniversalTranslator
@@ -19,16 +23,10 @@ type Validator struct {
 	registeredTypes sync.Map // map[reflect.Type]struct{}
 }
 
-type RegisterTranslationsFunc func(
-	v *validator.Validate,
-	trans ut.Translator,
-) (err error)
-
-type Translator struct {
-	Translator           locales.Translator
-	RegisterTranslations RegisterTranslationsFunc
-}
-
+// New constructs a new Validator configured with the provided locales.
+//
+// At least one Translator must be supplied, and one of them must match the
+// defaultLang parameter.
 func New(
 	defaultLang string,
 	translators ...Translator,
@@ -81,26 +79,17 @@ func New(
 	}, nil
 }
 
-type ValidationErrors struct {
-	validator.ValidationErrors
-	TranslatedErrors map[string]string
-}
-
-func (v *ValidationErrors) Error() string {
-	msgs := make([]string, 0, len(v.TranslatedErrors))
-	for _, msg := range v.TranslatedErrors {
-		msgs = append(msgs, msg)
-	}
-	return strings.Join(msgs, "; ")
-}
-
+// Validate performs struct validation and returns translated error messages.
+//
+// If the provided data is nil or not a struct/pointer to struct, the method
+// exits early doing nothing. When validation errors occur they are returned as
+// *ValidationErrors so callers can inspect individual field messages.
 func (v *Validator) Validate(data any, lang ...string) error {
 	if data == nil {
 		return nil
 	}
 
-	err := v.registerFieldTranslations(data)
-	if err != nil {
+	if err := v.registerFieldTranslations(data); err != nil {
 		return err
 	}
 
@@ -141,6 +130,8 @@ func (v *Validator) Validate(data any, lang ...string) error {
 	return nil
 }
 
+// registerFieldTranslations stores field name translations found in struct
+// tags so that they can be used when building the final error messages.
 func (v *Validator) registerFieldTranslations(data any) error {
 	t := reflect.TypeOf(data)
 
