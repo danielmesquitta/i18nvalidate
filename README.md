@@ -11,7 +11,6 @@ Built on top of [go-playground/validator](https://github.com/go-playground/valid
 - 🏷️ **`trans` struct tag** – describe localised field names right where you define your DTOs.
 - 🛠️ **Drop-in replacement** for `validator.Validate`: keep all existing validation tags.
 - 🚦 **Graceful fallback** – if the requested locale is missing the package falls back to the default language.
-- ⚡ **Zero allocations at runtime** – translations are cached per struct type.
 
 ---
 
