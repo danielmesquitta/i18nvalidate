@@ -1,7 +1,7 @@
 # i18nvalidate
 
 Internationalized, struct-based input validation for Go ✨  
-Built on top of [go-playground/validator](https://github.com/go-playground/validator) and [universal-translator](https://github.com/go-playground/universal-translator), `i18nvalidate` makes it trivial to return user-friendly validation errors in multiple languages.
+Built on top of [go-playground/validator](https://github.com/go-playground/validator) and [go-playground/universal-translator](https://github.com/go-playground/universal-translator), `i18nvalidate` makes it trivial to return user-friendly validation errors in multiple languages.
 
 ---
 
